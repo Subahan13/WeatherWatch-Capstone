@@ -85,6 +85,15 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.http.id
   name        = "$default"
   auto_deploy = true
+
+  # FIX (self-review F2): the public GET /weather route has no auth, so every
+  # hit spends compute AND a paid OpenWeatherMap call. Stage-level throttling
+  # caps the blast radius and runaway cost. Beyond the limits, API Gateway
+  # returns HTTP 429. Pillars: Security + Cost.
+  default_route_settings {
+    throttling_rate_limit  = 10 # steady-state requests/sec
+    throttling_burst_limit = 5  # burst ceiling
+  }
 }
 
 # Allow API Gateway to invoke the function (resource-based permission).
