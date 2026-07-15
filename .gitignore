@@ -1,0 +1,7 @@
+.terraform/
+build/
+*.tfstate
+*.tfstate.backup
+__pycache__/
+*.pyc
+.DS_Store
